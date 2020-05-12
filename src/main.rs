@@ -2,6 +2,8 @@ extern crate minifb;
 
 use minifb::{Key, Window, WindowOptions};
 
+pub mod color;
+
 const WIDTH: usize = 640;
 const HEIGHT: usize = 360;
 
