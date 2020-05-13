@@ -1,0 +1,133 @@
+name: Release
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+  build-linux:
+    runs-on: ubuntu-latest
+    needs: test-linux
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build app
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - uses: actions/upload-artifact@v1
+        with:
+          name: linux-exe
+          path: target/release/rustenstein-3d
+
+  test-win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+  build-win:
+    runs-on: windows-latest
+    needs: test-win
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: i686-pc-windows-msvc
+      - name: Build app
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - name: Build app (x86)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target i686-pc-windows-msvc
+      - uses: actions/upload-artifact@v1
+        with:
+          name: win-exe
+          path: target/release/rustenstein-3d.exe
+      - run: ls ./target
+      - uses: actions/upload-artifact@v1
+        with:
+          name: win-exe-x86
+          path: target/i686-pc-windows-msvc/release/rustenstein-3d.exe
+
+  upload-assets:
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-win]
+    steps:
+      - uses: actions/download-artifact@v1
+        with:
+          name: win-exe
+      - uses: actions/download-artifact@v1
+        with:
+          name: win-exe-x86
+      - uses: actions/download-artifact@v1
+        with:
+          name: linux-exe
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - run: ls
+      - name: Upload Release Asset - Windows x64
+        id: upload-release-asset-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./win-exe/rustenstein-3d.exe
+          asset_name: rustenstein-3d-windows-x64.exe
+          asset_content_type: application/x-msdownload
+      - name: Upload Release Asset - Windows x86
+        id: upload-release-asset-win-x86
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./win-exe-x86/rustenstein-3d.exe
+          asset_name: rustenstein-3d-windows-x86.exe
+          asset_content_type: application/x-msdownload
+      - name: Upload Release Asset - Linux x64
+        id: upload-release-asset-linux
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./linux-exe/rustenstein-3d
+          asset_name: rustenstein-3d-linux-x64
+          asset_content_type: application/x-elf

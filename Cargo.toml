@@ -1,5 +1,5 @@
 [package]
-name = "experimental-rendering"
+name = "rustenstein-3d"
 version = "0.1.0"
 authors = ["UARTman <uartman@mail.ru>"]
 edition = "2018"
