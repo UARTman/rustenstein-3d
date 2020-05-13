@@ -15,7 +15,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: sudo apt-get install libxkbcommon-x11-0 libxkbcommon-x11-devlibxkbcommon0 libxkbcommon-dev
+      - run: sudo apt-get install libxkbcommon-x11-0 libxkbcommon-x11-devlibxkbcommon0 libxkbcommon-dev libwayland-client0 libwayland-cursor0
       - uses: actions-rs/cargo@v1
         with:
           command: test
@@ -28,7 +28,7 @@ jobs:
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - run: sudo apt-get install libxkbcommon-x11-0 libxkbcommon-x11-dev libxkbcommon0 libxkbcommon-dev
+      - run: sudo apt-get install libxkbcommon-x11-0 libxkbcommon-x11-dev libxkbcommon0 libxkbcommon-dev libwayland-client0 libwayland-cursor0
       - name: Build app
         uses: actions-rs/cargo@v1
         with:
