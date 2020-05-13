@@ -37,15 +37,18 @@ fn main() {
 
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        timer.tick();
-        px_renderer.clear();
-        py = (py + 20.0 * timer.dt.as_secs_f32()) % WIDTH as f32;
-        MINIMAP_PLAYER.render(px as usize, py as usize, &mut px_renderer);
-        px_renderer.render(&mut buffer);
+        timer.tick(); // Update Delta Time
+        px_renderer.clear(); // Clear Pixel Buffer
 
-        // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
+        py = (py + 20.0 * timer.dt.as_secs_f32()) % WIDTH as f32; // Update cross coordinates
+        MINIMAP_PLAYER.render(px as usize, py as usize, &mut px_renderer); // Render a cross onto Pixel Buffer
+
+
+        px_renderer.render(&mut buffer); // Flush a Pixel Buffer onto a framebuffer
+
+
         window
-            .update_with_buffer(&buffer, WIDTH, HEIGHT)
-            .unwrap();
+            .update_with_buffer(&buffer, WIDTH, HEIGHT) // Update a frame
+            .unwrap(); // Check for errors
     }
 }
