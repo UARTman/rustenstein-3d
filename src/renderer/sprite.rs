@@ -1,16 +1,13 @@
 use crate::renderer::pixel::Pixel;
 use crate::renderer::Renderer;
 
-
 pub struct Sprite8 {
     pub pixels: [[Pixel; 8]; 8],
 }
 
 impl Sprite8 {
     pub fn new(pixels: [[Pixel; 8]; 8]) -> Self {
-        Self {
-            pixels
-        }
+        Self { pixels }
     }
 
     pub fn render(&self, x: usize, y: usize, renderer: &mut Renderer) -> Option<()> {

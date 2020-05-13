@@ -1,12 +1,12 @@
 use crate::renderer::pixel::Pixel;
 
 pub mod pixel;
-pub mod sprite;
 pub mod pixel_colors;
+pub mod sprite;
 pub mod sprite_consts;
 
 pub struct Renderer {
-    pixel_buffer: Vec<Vec<Pixel>>
+    pixel_buffer: Vec<Vec<Pixel>>,
 }
 
 impl Renderer {
