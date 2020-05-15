@@ -4,6 +4,7 @@ pub mod pixel;
 pub mod pixel_colors;
 pub mod sprite;
 pub mod sprite_consts;
+pub mod char;
 
 pub struct Renderer {
     pixel_buffer: Vec<Vec<Pixel>>,

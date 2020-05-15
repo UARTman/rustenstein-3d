@@ -4,6 +4,7 @@ use minifb::{Key, Window, WindowOptions};
 
 use crate::renderer::sprite_consts::MINIMAP_PLAYER;
 use crate::timer::Timer;
+use crate::renderer::pixel::Pixel;
 
 pub mod color;
 pub mod renderer;
@@ -25,9 +26,9 @@ fn main() {
         HEIGHT,
         WindowOptions::default(),
     )
-    .unwrap_or_else(|e| {
-        panic!("{}", e);
-    });
+        .unwrap_or_else(|e| {
+            panic!("{}", e);
+        });
 
     // Limit to max ~60 fps update rate
     window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
@@ -41,6 +42,9 @@ fn main() {
         py = (py + 20.0 * timer.dt.as_secs_f32()) % WIDTH as f32; // Update cross coordinates
         MINIMAP_PLAYER.render(px as usize, py as usize, &mut px_renderer); // Render a cross onto Pixel Buffer
 
+
+        px_renderer.place_string(0, 0, format!("DT: {}", timer.dt.as_secs_f32()).as_str(), Pixel::rgb(100, 100, 0));
+        px_renderer.place_string(8, 0, format!("FPS: {}", 1.0 / timer.dt.as_secs_f32()).as_str(), Pixel::rgb(100, 100, 0));
         px_renderer.render(&mut buffer); // Flush a Pixel Buffer onto a framebuffer
 
         window
