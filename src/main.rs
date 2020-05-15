@@ -43,8 +43,8 @@ fn main() {
         MINIMAP_PLAYER.render(px as usize, py as usize, &mut px_renderer); // Render a cross onto Pixel Buffer
 
 
-        px_renderer.place_string(0, 0, format!("DT: {}", timer.dt.as_secs_f32()).as_str(), Pixel::rgb(100, 100, 0));
-        px_renderer.place_string(8, 0, format!("FPS: {}", 1.0 / timer.dt.as_secs_f32()).as_str(), Pixel::rgb(100, 100, 0));
+        px_renderer.place_string(0, 0, format!("DT: {}", timer.dt.as_secs_f32()).as_str(), Pixel::rgb(255, 255, 0));
+        px_renderer.place_string(8, 0, format!("FPS: {}", 1.0 / timer.dt.as_secs_f32()).as_str(), Pixel::rgb(255, 255, 0));
         px_renderer.render(&mut buffer); // Flush a Pixel Buffer onto a framebuffer
 
         window
