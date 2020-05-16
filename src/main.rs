@@ -9,6 +9,7 @@ use crate::new_renderer::pixel::rgb;
 pub mod color;
 pub mod timer;
 pub mod new_renderer;
+pub mod game;
 
 const WIDTH: usize = 640;
 const HEIGHT: usize = 360;
@@ -37,7 +38,7 @@ fn main() {
 
         renderer.clear();
         renderer.place_string(0, 0, format!("DT: {}", timer.dt.as_secs_f32()).as_str(), rgb(255, 255, 0));
-        renderer.place_string(8, 0, format!("FPS: {}",1.0 /  timer.dt.as_secs_f32()).as_str(), rgb(255, 255, 0));
+        renderer.place_string(8, 0, format!("FPS: {}", 1.0 / timer.dt.as_secs_f32()).as_str(), rgb(255, 255, 0));
 
         renderer.flush(&mut window).unwrap();
     }
