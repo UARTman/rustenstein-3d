@@ -9,6 +9,7 @@ use crate::renderer::pixel::Pixel;
 pub mod color;
 pub mod renderer;
 pub mod timer;
+pub mod new_renderer;
 
 const WIDTH: usize = 640;
 const HEIGHT: usize = 360;
