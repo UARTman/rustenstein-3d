@@ -12,15 +12,17 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn move_player(&mut self, x: f32, y: f32) {
-        self.player.go(x, y);
+    pub fn move_player(&mut self, forward: f32, right: f32) {
+        self.player.go_forward(forward);
+        self.player.go_right(right);
         if self.collide_player() {
-            self.player.go(-x, -y);
+            self.player.go_forward(-forward);
+            self.player.go_right(-right);
         }
     }
 
     fn collide_player(&self) -> bool {
-        self.field.field[self.player.x as usize][self.player.y as usize] != '#'
+        self.field.field[self.player.x as usize][self.player.y as usize] == '#'
     }
 
     pub fn render_map(&self, renderer: &mut ImmediateRenderer) {

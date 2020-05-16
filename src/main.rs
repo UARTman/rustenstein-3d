@@ -38,11 +38,37 @@ fn main() {
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         timer.tick();
+        let tdt = timer.dt.as_secs_f32();
+
+        let (mut gf, mut gr) : (f32, f32)= (0.0, 0.0);
+        if window.is_key_down(Key::W) {
+            gf = 1.0 * tdt
+        }
+        if window.is_key_down(Key::S) {
+            gf = -1.0 * tdt
+        }
+        if window.is_key_down(Key::A) {
+            gr = -1.0 * tdt
+        }
+        if window.is_key_down(Key::D) {
+            gr = 1.0 * tdt
+        }
+
+        if gf != 0.0 || gr != 0.0 {
+            game.move_player(gf, gr)
+        }
+
+        if window.is_key_down(Key::Q) {
+            game.player.rotate(0.2 * tdt)
+        }
+        if window.is_key_down(Key::E) {
+            game.player.rotate(-0.2 * tdt)
+        }
 
         renderer.clear();
         game.render_map(&mut renderer);
-        renderer.place_string(0, 0, format!("DT: {}", timer.dt.as_secs_f32()).as_str(), rgb(255, 255, 0));
-        renderer.place_string(8, 0, format!("FPS: {}", 1.0 / timer.dt.as_secs_f32()).as_str(), rgb(255, 255, 0));
+        renderer.place_string(0, 0, format!("FPS: {}", 1.0 / tdt).as_str(), rgb(255, 255, 0));
+        renderer.place_string(8, 0, format!("Player angle: {}", game.player.angle).as_str(), rgb(255, 255, 0));
 
         renderer.flush(&mut window).unwrap();
     }
