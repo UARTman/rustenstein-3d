@@ -1,15 +1,15 @@
-use crate::renderer::Renderer;
-use font8x8::{BASIC_FONTS, UnicodeFonts, LATIN_FONTS, MISC_FONTS, SGA_FONTS};
-use crate::renderer::pixel::Pixel;
+use crate::new_renderer::ImmediateRenderer;
+use crate::new_renderer::pixel::Pixel;
+use font8x8::{BASIC_FONTS, UnicodeFonts};
 
-impl Renderer {
-    pub fn place_char(&mut self, x: usize, y: usize, c: char, color: Pixel) -> Option<()> {
+impl ImmediateRenderer {
+    pub fn place_char(&mut self, x: usize, y: usize, c: char, p: Pixel) -> Option<()> {
         let f_mask = BASIC_FONTS.get(c)?;
         for (i, row) in f_mask.iter().enumerate() {
             for bit in 0..8 {
                 match *row & 1 << bit {
                     0 => {}
-                    _ => { *self.get_mut(x + i, y + bit as usize)? = color }
+                    _ => { *self.get_pixel_mut(x + i, y + bit as usize)? = p }
                 }
             }
         }
