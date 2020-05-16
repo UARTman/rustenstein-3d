@@ -1,10 +1,20 @@
 use crate::new_renderer::ImmediateRenderer;
 use crate::new_renderer::pixel::Pixel;
-use font8x8::{BASIC_FONTS, UnicodeFonts};
+use font8x8::{BASIC_FONTS, UnicodeFonts, BLOCK_FONTS};
 
 impl ImmediateRenderer {
     pub fn place_char(&mut self, x: usize, y: usize, c: char, p: Pixel) -> Option<()> {
-        let f_mask = BASIC_FONTS.get(c)?;
+        let fm = BASIC_FONTS.get(c);
+        let f_mask = match fm {
+            Some(x) => x,
+            None => {
+                let fm1 = BLOCK_FONTS.get(c);
+                match fm1 {
+                    Some(x) => x,
+                    None => { return None; }
+                }
+            }
+        };
         for (i, row) in f_mask.iter().enumerate() {
             for bit in 0..8 {
                 match *row & 1 << bit {
@@ -18,7 +28,7 @@ impl ImmediateRenderer {
 
     pub fn place_string(&mut self, x: usize, y: usize, s: &str, color: Pixel) -> Option<()> {
         for (i, c) in s.chars().enumerate() {
-            self.place_char(x , y+ i * 9, c, color)?
+            self.place_char(x, y + i * 9, c, color)?
         }
         Some(())
     }

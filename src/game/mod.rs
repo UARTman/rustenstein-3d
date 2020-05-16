@@ -32,6 +32,24 @@ impl Game {
             }
         }
         renderer.place_char(24 + (self.player.x * 8.0) as usize, (self.player.y * 8.0) as usize, '@', rgb(255, 0, 255));
+        let (vx, vy, _) = self.raycast(self.player.x, self.player.y, self.player.angle, 0.01, 16.0).unwrap();
+        renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255,0,0));
+    }
+
+    pub fn raycast(&self, mut x: f32, mut y: f32, angle: f32, step: f32, limit: f32) -> Option<(f32, f32, f32)> {
+        let mut long = 0.0;
+
+        loop {
+            x += step * -angle.sin();
+            y += step * angle.cos();
+            if self.field.field[x as usize][y as usize] == '#' {
+                return Some((x, y, long + step));
+            }
+            long += step;
+            if long as usize >= limit as usize { //TODO: Remove kostyl
+                return None;
+            }
+        }
     }
 }
 
