@@ -35,8 +35,18 @@ impl Game {
         for px in 0..width {
             let (cx, cy, ray) = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0).unwrap();
 
-            let offset = (ray * 12.0).powf(0.9) as usize;
+            println!("{} {} {}",height as f32, ray, height as f32 / ray);
+
+            let mut ho = (height as f32 / ray) as usize; // KOSTYL: Check for some float shenanigans.
+            if ho > 180 {
+                ho = 180;
+            }
+
+            let offset = ((height/ 2) - ho);
+            // let offset = (ray * 12.0).powf(0.9) as usize;
             let coeff = 1.0 - ray / 16.0;
+
+
 
 
             let grayscale = (255.0 * coeff) as u32;
