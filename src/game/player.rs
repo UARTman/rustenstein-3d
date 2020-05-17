@@ -5,9 +5,6 @@ pub struct Player {
 }
 
 impl Player {
-    fn new(x: f32, y: f32, angle: f32) -> Self {
-        Self { x, y, angle }
-    }
 
     pub fn go_forward(&mut self, d: f32) {
         self.x += d * -self.angle.sin();

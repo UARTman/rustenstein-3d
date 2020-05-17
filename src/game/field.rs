@@ -2,17 +2,17 @@ type GameFieldVec = Vec<Vec<char>>;
 
 pub struct GameField {
     pub(crate) field: GameFieldVec,
-    height: usize,
-    width: usize,
+    // height: usize,
+    // width: usize,
 }
 
 impl GameField {
     pub fn new(field: GameFieldVec) -> Self {
-        let (height, width) = (field.len(), field[0].len());
+        // let (height, width) = (field.len(), field[0].len());
         Self {
             field,
-            height,
-            width,
+            // height,
+            // width,
         }
     }
 }

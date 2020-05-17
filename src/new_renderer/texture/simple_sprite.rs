@@ -8,7 +8,7 @@ pub struct SimpleSpriteTexture {
 }
 
 impl Texture for SimpleSpriteTexture {
-    fn sample_pixel(&self, mut x: f32, y: f32) -> u32 {
+    fn sample_pixel(&self, x: f32, y: f32) -> u32 {
         self.sprite[((x - x.floor()).abs() * self.height as f32) as usize]
             [((y - y.floor()).abs() * self.width as f32) as usize]
     }

@@ -6,7 +6,7 @@ pub struct ColorTexture {
 }
 
 impl Texture for ColorTexture {
-    fn sample_pixel(&self, x: f32, y: f32) -> u32 {
+    fn sample_pixel(&self, _x: f32, _y: f32) -> u32 {
         self.color
     }
 }

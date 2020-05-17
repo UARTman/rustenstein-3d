@@ -2,13 +2,11 @@ use crate::game::field::GameField;
 use crate::game::player::Player;
 use crate::new_renderer::pixel::rgb;
 use crate::new_renderer::shader::lit_texture::LitTextureShader;
-use crate::new_renderer::shader::old_wall::{sample_wall, OldWallShader};
 use crate::new_renderer::shader::Shader;
 use crate::new_renderer::texture::color::ColorTexture;
-use crate::new_renderer::texture::procedural_grass::ProceduralGrassTexture;
-use crate::new_renderer::texture::procedural_red::ProceduralRedTexture;
 use crate::new_renderer::texture::simple_sprite::SimpleSpriteTexture;
 use crate::new_renderer::ImmediateRenderer;
+use std::cmp::min;
 
 pub mod field;
 pub mod player;
@@ -117,7 +115,7 @@ impl Game {
         );
 
         if let Some((vx, vy, _)) =
-            self.raycast(self.player.x, self.player.y, self.player.angle, 0.8, 100.0)
+        self.raycast(self.player.x, self.player.y, self.player.angle, 0.8, 100.0)
         {
             renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255, 0, 0));
         }
@@ -188,4 +186,28 @@ impl Default for Game {
             }),
         }
     }
+}
+
+pub fn sample_wall(x: f32, y: f32, precision: f32) -> f32 {
+    let fx = x - x.floor();
+    let fy = y - y.floor();
+    let ux = (fx * precision) as usize;
+    let uy = (fy * precision) as usize;
+    let nx = precision as usize - ux;
+    let ny = precision as usize - uy;
+    let m = min(min(ux, nx), min(uy, ny));
+    if m == ux {
+        return 1.0 - fy;
+    }
+    if m == uy {
+        return fx;
+    }
+    if m == nx {
+        return fy;
+    }
+    if m == ny {
+        return 1.0 - fx;
+    }
+
+    panic!()
 }
