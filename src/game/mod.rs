@@ -57,7 +57,7 @@ impl Game {
                     let all = (height - 2 * offset);
 
                     for i in ceil..floor {
-                        *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, ((i - ceil) as f32 / all as f32), sample_wall(cx, cy));
+                        *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, ((i - ceil) as f32 / all as f32), sample_wall(cx, cy, 1000.0));
                     }
                 }
                 None => {}
@@ -88,7 +88,7 @@ impl Game {
         loop {
             x += step * -angle.sin();
             y += step * angle.cos();
-            if self.field.field[x as usize][y as usize] == '#' {
+            if *self.field.field.get(x as usize)?.get(y as usize)? == '#' {
                 return Some((x, y, long + step));
             }
             long += step;

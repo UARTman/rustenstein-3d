@@ -17,13 +17,13 @@ impl Shader for OldWallShader {
     }
 }
 
-pub fn sample_wall(x: f32, y: f32) -> f32 {
+pub fn sample_wall(x: f32, y: f32, precision: f32) -> f32 {
     let fx = x - x.floor();
     let fy = y - y.floor();
-    let ux = (fx * 10.0) as usize;
-    let uy = (fy * 10.0) as usize;
-    let nx = 10 - ux;
-    let ny = 10 - uy;
+    let ux = (fx * precision) as usize;
+    let uy = (fy * precision) as usize;
+    let nx = precision as usize - ux;
+    let ny = precision as usize - uy;
     let m = min(min(ux, nx), min(uy, ny));
     if m == ux {
         return 1.0 - fy;
