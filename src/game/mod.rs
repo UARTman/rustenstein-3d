@@ -148,12 +148,23 @@ impl Game {
 
 impl Default for Game {
     fn default() -> Self {
+        let red = rgb(255, 0, 0);
+        let white = rgb(255, 255, 255);
+        let wall_texture = vec![
+            vec![red, white, red],
+            vec![white, red, white]
+        ];
+
         Self {
             field: Default::default(),
             player: Default::default(),
             wall_shader: Box::new(LitTextureShader {
                 draw_limit: 16.0,
-                texture: Box::new(ProceduralRedTexture {}),
+                texture: Box::new(SimpleSpriteTexture{
+                    sprite: wall_texture,
+                    width: 3,
+                    height: 2
+                }),
             }),
             floor_shader: Box::new(LitTextureShader {
                 draw_limit: 1.0,
