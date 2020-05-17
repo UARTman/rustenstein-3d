@@ -9,7 +9,7 @@ pub struct OldWallShader {
 impl Shader for OldWallShader {
     fn sample(&self, distance: f32, sx: f32, sy: f32) -> Pixel {
         if ((sy * 100.0) as usize) < 1 || (((1.0 - sy) * 100.0) as usize) < 1 {
-            return rgb(0,0,0);
+            return rgb(0, 0, 0);
         }
         let coefficient = 1.0 - distance / self.draw_limit;
         let grayscale = (255.0 * coefficient) as u32;

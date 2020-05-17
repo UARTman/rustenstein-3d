@@ -12,8 +12,8 @@ pub mod timer;
 pub mod new_renderer;
 pub mod game;
 
-const WIDTH: usize = 600;
-const HEIGHT: usize = 300;
+const WIDTH: usize = 800;
+const HEIGHT: usize = 600;
 
 fn main() {
     let mut window = Window::new(
@@ -58,10 +58,10 @@ fn main() {
         }
 
         if window.is_key_down(Key::Q) {
-            game.player.rotate(0.4 * tdt)
+            game.player.rotate(0.6 * tdt)
         }
         if window.is_key_down(Key::E) {
-            game.player.rotate(-0.4 * tdt)
+            game.player.rotate(-0.6 * tdt)
         }
 
         renderer.clear();

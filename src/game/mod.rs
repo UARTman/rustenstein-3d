@@ -4,6 +4,8 @@ use crate::new_renderer::ImmediateRenderer;
 use crate::new_renderer::pixel::rgb;
 use crate::new_renderer::shader::old_wall::{OldWallShader, sample_wall};
 use crate::new_renderer::shader::Shader;
+use crate::new_renderer::shader::lit_texture::LitTextureShader;
+use crate::new_renderer::texture::procedural_red::ProceduralRedTexture;
 
 pub mod field;
 pub mod player;
@@ -101,7 +103,12 @@ impl Default for Game {
         Self {
             field: Default::default(),
             player: Default::default(),
-            wall_shader: Box::new(OldWallShader { draw_limit: 16.0 })
+            wall_shader: Box::new(
+                LitTextureShader{
+                    draw_limit: 16.0,
+                    texture: Box::new(ProceduralRedTexture{})
+                }
+            )
         }
     }
 }
