@@ -35,7 +35,6 @@ impl Game {
         for px in 0..width {
             let (cx, cy, ray) = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0).unwrap();
 
-            println!("{} {} {}",height as f32, ray, height as f32 / ray);
 
             let mut ho = (height as f32 / ray) as usize; // KOSTYL: Check for some float shenanigans.
             if ho > 180 {
@@ -47,11 +46,14 @@ impl Game {
             let coeff = 1.0 - ray / 16.0;
 
 
+            let ceil = offset;
+
+            let floor = height - offset;
 
 
             let grayscale = (255.0 * coeff) as u32;
 
-            for i in offset..(height - offset) {
+            for i in offset..floor {
                 *renderer.get_pixel_mut(i, px).unwrap() = rgb(grayscale, grayscale, grayscale);
             }
 
