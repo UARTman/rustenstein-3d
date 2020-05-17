@@ -32,18 +32,17 @@ impl Game {
         let step = fov / width as f32;
         let mut angle = lbound;
 
-        for px in 0..width  {
+        for px in 0..width {
             let (cx, cy, ray) = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0).unwrap();
 
             let offset = (ray * 12.0).powf(0.9) as usize;
             let coeff = 1.0 - ray / 16.0;
 
 
-
             let grayscale = (255.0 * coeff) as u32;
 
             for i in offset..(height - offset) {
-                * renderer.get_pixel_mut(i, px).unwrap() = rgb(grayscale, grayscale, grayscale);
+                *renderer.get_pixel_mut(i, px).unwrap() = rgb(grayscale, grayscale, grayscale);
             }
 
             angle -= step;
