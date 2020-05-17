@@ -53,9 +53,10 @@ impl Game {
             let raycast = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0);
 
             if let Some((cx, cy, ray)) = raycast {
-                let rd = ray * (angle - self.player.angle).cos();
+                let rd = ray * (angle - self.player.angle).abs().cos();
 
-                let mut ho = (height as f32 / rd) as usize;
+                let _ho = ((height as f32 / rd).floor() - 1.0) as usize;
+                let mut ho = _ho;
                 if ho > half_height {
                     // KOSTYL: Check for some float shenanigans.
                     ho = half_height;
@@ -67,16 +68,14 @@ impl Game {
 
                 let floor = height - offset;
 
-                let all = height - 2 * offset;
-
                 let wall_sample = sample_wall(cx, cy, 1000.0);
 
                 for i in ceil..floor {
+                    let sx = (i-ceil + (_ho - ho)) as f32 / (2 * _ho) as f32 ;
                     *renderer.get_pixel_mut(i, px).unwrap() =
                         self.wall_shader
-                            .sample(ray, (i - ceil) as f32 / all as f32, wall_sample);
+                            .sample(ray, sx, wall_sample);
                 }
-
 
 
                 for i in floor..height {
@@ -151,8 +150,14 @@ impl Default for Game {
         let red = rgb(255, 0, 0);
         let white = rgb(255, 255, 255);
         let wall_texture = vec![
-            vec![red, white, red],
-            vec![white, red, white]
+            vec![white, red, red, red, white, red, red, red],
+            vec![white; 8],
+            vec![red, white, red, red, red, white, red, red],
+            vec![white; 8],
+            vec![red, red, white, red, red, red, white, red],
+            vec![white; 8],
+            vec![white, red, red, red, white, red, red, red],
+            vec![white; 8],
         ];
 
         Self {
@@ -160,10 +165,10 @@ impl Default for Game {
             player: Default::default(),
             wall_shader: Box::new(LitTextureShader {
                 draw_limit: 16.0,
-                texture: Box::new(SimpleSpriteTexture{
+                texture: Box::new(SimpleSpriteTexture {
                     sprite: wall_texture,
-                    width: 3,
-                    height: 2
+                    width: 8,
+                    height: 8,
                 }),
             }),
             floor_shader: Box::new(LitTextureShader {
