@@ -47,6 +47,7 @@ impl Game {
         let rbound = self.player.angle - hfov;
         let step = fov / width as f32;
         let mut angle = lbound;
+        let half_height = height / 2;
 
         for px in 0..width {
             let raycast = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0);
@@ -55,12 +56,12 @@ impl Game {
                 let rd = ray * (angle - self.player.angle).cos();
 
                 let mut ho = (height as f32 / rd) as usize;
-                if ho > height / 2 {
+                if ho > half_height {
                     // KOSTYL: Check for some float shenanigans.
-                    ho = height / 2;
+                    ho = half_height;
                 }
 
-                let offset = (height / 2) - ho;
+                let offset = half_height - ho;
 
                 let ceil = offset;
 
@@ -76,18 +77,21 @@ impl Game {
                             .sample(ray, (i - ceil) as f32 / all as f32, wall_sample);
                 }
 
+
+
                 for i in floor..height {
+                    let ah = height - i;
                     *renderer.get_pixel_mut(i, px).unwrap() = self.floor_shader.sample(
-                        (((height - i) as f32) / (height / 2) as f32) * 16.0,
-                        1.0 - ((height - i) as f32) / (height / 2) as f32,
+                        (ah as f32) / half_height as f32,
+                        1.0 - ((ah as f32) / half_height as f32),
                         px as f32 / width as f32,
                     );
                 }
 
                 for i in 0..ceil {
                     *renderer.get_pixel_mut(i, px).unwrap() = self.ceil_shader.sample(
-                        (i as f32 / (height / 2) as f32) * 16.0,
-                        i as f32 / (height / 2) as f32,
+                        i as f32 / half_height as f32,
+                        i as f32 / half_height as f32,
                         px as f32 / width as f32,
                     );
                 }
@@ -111,7 +115,7 @@ impl Game {
         );
 
         if let Some((vx, vy, _)) =
-            self.raycast(self.player.x, self.player.y, self.player.angle, 0.01, 100.0)
+        self.raycast(self.player.x, self.player.y, self.player.angle, 0.8, 100.0)
         {
             renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255, 0, 0));
         }
@@ -152,13 +156,13 @@ impl Default for Game {
                 texture: Box::new(ProceduralRedTexture {}),
             }),
             floor_shader: Box::new(LitTextureShader {
-                draw_limit: 16.0,
+                draw_limit: 1.0,
                 texture: Box::new(ColorTexture {
                     color: rgb(0, 255, 0),
                 }),
             }),
             ceil_shader: Box::new(LitTextureShader {
-                draw_limit: 16.0,
+                draw_limit: 1.0,
                 texture: Box::new(ColorTexture {
                     color: rgb(40, 40, 255),
                 }),
