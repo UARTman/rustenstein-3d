@@ -3,6 +3,7 @@ use crate::new_renderer::pixel::Pixel;
 
 pub mod pixel;
 pub mod text;
+pub mod shader;
 
 pub struct ImmediateRenderer {
     buffer: Vec<u32>,

@@ -2,6 +2,8 @@ use crate::game::field::GameField;
 use crate::game::player::Player;
 use crate::new_renderer::ImmediateRenderer;
 use crate::new_renderer::pixel::rgb;
+use crate::new_renderer::shader::old_wall::{OldWallShader, sample_wall};
+use crate::new_renderer::shader::Shader;
 
 pub mod field;
 pub mod player;
@@ -9,6 +11,7 @@ pub mod player;
 pub struct Game {
     pub field: GameField,
     pub player: Player,
+    pub wall_shader: Box<dyn Shader>,
 }
 
 impl Game {
@@ -33,29 +36,30 @@ impl Game {
         let mut angle = lbound;
 
         for px in 0..width {
-            let (cx, cy, ray) = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0).unwrap();
+            let raycast = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0);
+
+            match raycast {
+                Some((cx, cy, ray)) => {
+                    let mut ho = (height as f32 / ray) as usize;
+                    if ho > height / 2 {  // KOSTYL: Check for some float shenanigans.
+                        ho = height / 2;
+                    }
+
+                    let offset = ((height / 2) - ho);
 
 
-            let mut ho = (height as f32 / ray) as usize; // KOSTYL: Check for some float shenanigans.
-            if ho > 180 {
-                ho = 180;
+                    let ceil = offset;
+
+                    let floor = height - offset;
+
+
+                    for i in ceil..floor {
+                        *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, (floor - ceil) as f32 / (i - ceil) as f32, sample_wall(cx, cy));
+                    }
+                }
+                None => {}
             }
 
-            let offset = ((height/ 2) - ho);
-            // let offset = (ray * 12.0).powf(0.9) as usize;
-            let coeff = 1.0 - ray / 16.0;
-
-
-            let ceil = offset;
-
-            let floor = height - offset;
-
-
-            let grayscale = (255.0 * coeff) as u32;
-
-            for i in offset..floor {
-                *renderer.get_pixel_mut(i, px).unwrap() = rgb(grayscale, grayscale, grayscale);
-            }
 
             angle -= step;
         }
@@ -68,8 +72,11 @@ impl Game {
             }
         }
         renderer.place_char(24 + (self.player.x * 8.0) as usize, (self.player.y * 8.0) as usize, '@', rgb(255, 0, 255));
-        let (vx, vy, _) = self.raycast(self.player.x, self.player.y, self.player.angle, 0.01, 16.0).unwrap();
-        renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255, 0, 0));
+        let x = self.raycast(self.player.x, self.player.y, self.player.angle, 0.01, 100.0);
+        match x {
+            Some((vx, vy, _)) => { renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255, 0, 0)); }
+            None => {}
+        }
     }
 
     pub fn raycast(&self, mut x: f32, mut y: f32, angle: f32, step: f32, limit: f32) -> Option<(f32, f32, f32)> {
@@ -94,6 +101,7 @@ impl Default for Game {
         Self {
             field: Default::default(),
             player: Default::default(),
+            wall_shader: Box::new(OldWallShader { draw_limit: 16.0 })
         }
     }
 }
