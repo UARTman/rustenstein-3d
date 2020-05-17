@@ -9,22 +9,26 @@ pub fn grayscale(s: u32) -> Pixel {
 }
 
 pub fn to_rgb(mut px: Pixel) -> (u32, u32, u32) {
-    let b = px % (1 << 8);
-    px = px / (1 << 8);
-    let g = px % (1 << 8);
-    px = px / (1 << 8);
-    let r = px % (1 << 8);
-    return (r, g, b);
+    let blue = px % (1 << 8);
+    px /= 1 << 8;
+    let green = px % (1 << 8);
+    px /= 1 << 8;
+    let red = px % (1 << 8);
+    (red, green, blue)
 }
 
-pub fn shade(p: Pixel, c: f32 ) -> Pixel {
-    let (r,g,b) = to_rgb(p);
-    rgb((r as f32 * c) as u32, (g as f32 * c) as u32, (b as f32 * c) as u32 )
+pub fn shade(pixel: Pixel, coefficient: f32) -> Pixel {
+    let (red, green, blue) = to_rgb(pixel);
+    rgb(
+        (red as f32 * coefficient) as u32,
+        (green as f32 * coefficient) as u32,
+        (blue as f32 * coefficient) as u32,
+    )
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::new_renderer::pixel::{to_rgb, rgb};
+    use crate::new_renderer::pixel::{rgb, to_rgb};
 
     #[test]
     fn test_unpixel() {

@@ -2,7 +2,7 @@ use crate::new_renderer::pixel::Pixel;
 use crate::new_renderer::texture::Texture;
 
 pub struct ColorTexture {
-    pub color: Pixel
+    pub color: Pixel,
 }
 
 impl Texture for ColorTexture {

@@ -1,5 +1,5 @@
-use crate::new_renderer::shader::Shader;
 use crate::new_renderer::pixel::shade;
+use crate::new_renderer::shader::Shader;
 use crate::new_renderer::texture::Texture;
 
 pub struct LitTextureShader {

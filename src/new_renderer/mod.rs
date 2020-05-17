@@ -1,9 +1,9 @@
-use minifb::{Window, Error};
 use crate::new_renderer::pixel::Pixel;
+use minifb::{Error, Window};
 
 pub mod pixel;
-pub mod text;
 pub mod shader;
+pub mod text;
 pub mod texture;
 
 pub struct ImmediateRenderer {

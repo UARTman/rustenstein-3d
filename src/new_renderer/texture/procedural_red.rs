@@ -1,5 +1,5 @@
-use crate::new_renderer::texture::Texture;
 use crate::color::rgb;
+use crate::new_renderer::texture::Texture;
 
 pub struct ProceduralRedTexture {}
 

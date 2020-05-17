@@ -2,15 +2,15 @@ extern crate minifb;
 
 use minifb::{Key, Window, WindowOptions};
 
-use crate::timer::Timer;
-use crate::new_renderer::ImmediateRenderer;
-use crate::new_renderer::pixel::rgb;
 use crate::game::Game;
+use crate::new_renderer::pixel::rgb;
+use crate::new_renderer::ImmediateRenderer;
+use crate::timer::Timer;
 
 pub mod color;
-pub mod timer;
-pub mod new_renderer;
 pub mod game;
+pub mod new_renderer;
+pub mod timer;
 
 const WIDTH: usize = 800;
 const HEIGHT: usize = 600;
@@ -22,10 +22,9 @@ fn main() {
         HEIGHT,
         WindowOptions::default(),
     )
-        .unwrap_or_else(|e| {
-            panic!("{}", e);
-        });
-
+    .unwrap_or_else(|e| {
+        panic!("{}", e);
+    });
 
     // window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
@@ -69,8 +68,18 @@ fn main() {
         renderer.clear();
         game.render_walls(&mut renderer, fov, WIDTH, HEIGHT);
         game.render_map(&mut renderer);
-        renderer.place_string(0, 0, format!("FPS: {}", 1.0 / tdt).as_str(), rgb(255, 255, 0));
-        renderer.place_string(8, 0, format!("Player angle: {}", game.player.angle).as_str(), rgb(255, 255, 0));
+        renderer.place_string(
+            0,
+            0,
+            format!("FPS: {}", 1.0 / tdt).as_str(),
+            rgb(255, 255, 0),
+        );
+        renderer.place_string(
+            8,
+            0,
+            format!("Player angle: {}", game.player.angle).as_str(),
+            rgb(255, 255, 0),
+        );
 
         renderer.flush(&mut window).unwrap();
     }

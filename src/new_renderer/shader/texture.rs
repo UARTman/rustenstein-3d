@@ -1,8 +1,8 @@
-use crate::new_renderer::texture::Texture;
 use crate::new_renderer::shader::Shader;
+use crate::new_renderer::texture::Texture;
 
 pub struct TextureShader {
-    pub texture: Box<dyn Texture>
+    pub texture: Box<dyn Texture>,
 }
 
 impl Shader for TextureShader {

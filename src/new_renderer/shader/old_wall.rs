@@ -1,9 +1,9 @@
+use crate::new_renderer::pixel::{rgb, Pixel};
 use crate::new_renderer::shader::Shader;
-use crate::new_renderer::pixel::{Pixel, rgb};
 use std::cmp::{max, min};
 
 pub struct OldWallShader {
-    pub draw_limit: f32
+    pub draw_limit: f32,
 }
 
 impl Shader for OldWallShader {

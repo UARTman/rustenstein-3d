@@ -1,6 +1,6 @@
-use crate::new_renderer::ImmediateRenderer;
 use crate::new_renderer::pixel::Pixel;
-use font8x8::{BASIC_FONTS, UnicodeFonts, BLOCK_FONTS};
+use crate::new_renderer::ImmediateRenderer;
+use font8x8::{UnicodeFonts, BASIC_FONTS, BLOCK_FONTS};
 
 impl ImmediateRenderer {
     pub fn place_char(&mut self, x: usize, y: usize, c: char, p: Pixel) -> Option<()> {
@@ -11,7 +11,9 @@ impl ImmediateRenderer {
                 let fm1 = BLOCK_FONTS.get(c);
                 match fm1 {
                     Some(x) => x,
-                    None => { return None; }
+                    None => {
+                        return None;
+                    }
                 }
             }
         };
@@ -19,7 +21,7 @@ impl ImmediateRenderer {
             for bit in 0..8 {
                 match *row & 1 << bit {
                     0 => {}
-                    _ => { *self.get_pixel_mut(x + i, y + bit as usize)? = p }
+                    _ => *self.get_pixel_mut(x + i, y + bit as usize)? = p,
                 }
             }
         }
