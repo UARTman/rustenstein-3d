@@ -54,9 +54,10 @@ impl Game {
 
                     let floor = height - offset;
 
+                    let all = (height - 2 * offset);
 
                     for i in ceil..floor {
-                        *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, (floor - ceil) as f32 / (i - ceil) as f32, sample_wall(cx, cy));
+                        *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, ((i - ceil) as f32 / all as f32), sample_wall(cx, cy));
                     }
                 }
                 None => {}
