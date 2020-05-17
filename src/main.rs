@@ -66,6 +66,7 @@ fn main() {
         }
 
         renderer.clear();
+        game.render_walls(&mut renderer, 2.5, WIDTH, HEIGHT);
         game.render_map(&mut renderer);
         renderer.place_string(0, 0, format!("FPS: {}", 1.0 / tdt).as_str(), rgb(255, 255, 0));
         renderer.place_string(8, 0, format!("Player angle: {}", game.player.angle).as_str(), rgb(255, 255, 0));

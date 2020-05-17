@@ -25,6 +25,31 @@ impl Game {
         self.field.field[self.player.x as usize][self.player.y as usize] == '#'
     }
 
+    pub fn render_walls(&self, renderer: &mut ImmediateRenderer, fov: f32, width: usize, height: usize) {
+        let hfov = fov / 2.0;
+        let lbound = self.player.angle + hfov;
+        let rbound = self.player.angle - hfov;
+        let step = fov / width as f32;
+        let mut angle = lbound;
+
+        for px in 0..width  {
+            let (cx, cy, ray) = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0).unwrap();
+
+            let offset = (ray * 12.0).powf(0.9) as usize;
+            let coeff = 1.0 - ray / 16.0;
+
+
+
+            let grayscale = (255.0 * coeff) as u32;
+
+            for i in offset..(height - offset) {
+                * renderer.get_pixel_mut(i, px).unwrap() = rgb(grayscale, grayscale, grayscale);
+            }
+
+            angle -= step;
+        }
+    }
+
     pub fn render_map(&self, renderer: &mut ImmediateRenderer) {
         for (i, row) in self.field.field.iter().enumerate() {
             for (j, px) in row.iter().enumerate() {
@@ -33,7 +58,7 @@ impl Game {
         }
         renderer.place_char(24 + (self.player.x * 8.0) as usize, (self.player.y * 8.0) as usize, '@', rgb(255, 0, 255));
         let (vx, vy, _) = self.raycast(self.player.x, self.player.y, self.player.angle, 0.01, 16.0).unwrap();
-        renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255,0,0));
+        renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255, 0, 0));
     }
 
     pub fn raycast(&self, mut x: f32, mut y: f32, angle: f32, step: f32, limit: f32) -> Option<(f32, f32, f32)> {
