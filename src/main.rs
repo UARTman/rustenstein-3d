@@ -66,7 +66,7 @@ fn main() {
         }
 
         renderer.clear();
-        game.render_walls(&mut renderer, fov, WIDTH, HEIGHT);
+        game.render_scene(&mut renderer, fov, WIDTH, HEIGHT);
         game.render_map(&mut renderer);
         renderer.place_string(
             0,
