@@ -6,6 +6,9 @@ use crate::new_renderer::shader::old_wall::{OldWallShader, sample_wall};
 use crate::new_renderer::shader::Shader;
 use crate::new_renderer::shader::lit_texture::LitTextureShader;
 use crate::new_renderer::texture::procedural_red::ProceduralRedTexture;
+use crate::new_renderer::texture::procedural_grass::ProceduralGrassTexture;
+use crate::new_renderer::texture::simple_sprite::SimpleSpriteTexture;
+use crate::new_renderer::texture::color::ColorTexture;
 
 pub mod field;
 pub mod player;
@@ -14,6 +17,8 @@ pub struct Game {
     pub field: GameField,
     pub player: Player,
     pub wall_shader: Box<dyn Shader>,
+    pub floor_shader: Box<dyn Shader>,
+    pub ceil_shader: Box<dyn Shader>
 }
 
 impl Game {
@@ -42,13 +47,15 @@ impl Game {
 
             match raycast {
                 Some((cx, cy, ray)) => {
-                    let mut ho = (height as f32 / ray) as usize;
+
+                    let rd = ray * (angle - self.player.angle).cos();
+
+                    let mut ho = (height as f32 / rd) as usize;
                     if ho > height / 2 {  // KOSTYL: Check for some float shenanigans.
                         ho = height / 2;
                     }
 
                     let offset = ((height / 2) - ho);
-
 
                     let ceil = offset;
 
@@ -56,9 +63,20 @@ impl Game {
 
                     let all = (height - 2 * offset);
 
+                    let wall_sample = sample_wall(cx, cy, 1000.0);
+
                     for i in ceil..floor {
-                        *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, ((i - ceil) as f32 / all as f32), sample_wall(cx, cy, 1000.0));
+                        *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, ((i - ceil) as f32 / all as f32), wall_sample);
                     }
+
+                    for i in floor..height {
+                        *renderer.get_pixel_mut(i, px).unwrap() = self.floor_shader.sample((((height - i) as f32) / (height / 2) as f32)  * 16.0, 1.0 - ((height - i) as f32) / (height / 2) as f32, px as f32 / width as f32);
+                    }
+
+                    for i in 0..ceil {
+                        *renderer.get_pixel_mut(i, px).unwrap() = self.ceil_shader.sample((i as f32 / (height/2) as f32) * 16.0, i as f32 / (height/2) as f32 , px as f32 / width as f32);
+                    }
+
                 }
                 None => {}
             }
@@ -107,7 +125,19 @@ impl Default for Game {
             wall_shader: Box::new(
                 LitTextureShader{
                     draw_limit: 16.0,
-                    texture: Box::new(ProceduralRedTexture{})
+                    texture: Box::new(ProceduralRedTexture{}),
+                }
+            ),
+            floor_shader: Box::new(
+                LitTextureShader{
+                    draw_limit: 16.0,
+                    texture: Box::new(ColorTexture{color: rgb(0, 255, 0)})
+                }
+            ),
+            ceil_shader: Box::new(
+                LitTextureShader{
+                    draw_limit: 16.0,
+                    texture: Box::new(ColorTexture{color: rgb(40, 40, 255)})
                 }
             )
         }
