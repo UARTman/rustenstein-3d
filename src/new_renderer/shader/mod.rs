@@ -1,7 +1,6 @@
 use crate::new_renderer::pixel::Pixel;
 
 pub mod lit_texture;
-pub mod old_wall;
 pub mod unlit_texture;
 
 pub trait Shader {

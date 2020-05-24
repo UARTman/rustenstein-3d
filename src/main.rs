@@ -12,8 +12,8 @@ pub mod game;
 pub mod new_renderer;
 pub mod timer;
 
-const WIDTH: usize = 800;
-const HEIGHT: usize = 600;
+const WIDTH: usize = 600;
+const HEIGHT: usize = 380;
 
 fn main() {
     let mut window = Window::new(
@@ -26,7 +26,6 @@ fn main() {
         panic!("{}", e);
     });
 
-    // window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
     let mut renderer = ImmediateRenderer::new(&window);
 

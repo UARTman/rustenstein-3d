@@ -5,7 +5,6 @@ pub struct Player {
 }
 
 impl Player {
-
     pub fn go_forward(&mut self, d: f32) {
         self.x += d * -self.angle.sin();
         self.y += d * self.angle.cos();
@@ -24,8 +23,8 @@ impl Player {
 impl Default for Player {
     fn default() -> Self {
         Self {
-            x: 10.0,
-            y: 3.0,
+            x: 2.0,
+            y: 2.0,
             angle: 0.0,
         }
     }

@@ -33,6 +33,36 @@ impl Game {
         self.field.field[self.player.x as usize][self.player.y as usize] == '#'
     }
 
+    fn render_floor_and_ceiing(
+        &self,
+        renderer: &mut ImmediateRenderer,
+        px: usize,
+        height: usize,
+        width: usize,
+        ceiling: usize,
+        floor: usize,
+    ) {
+        let sy = px as f32 / width as f32;
+        let half_height = height / 2;
+        for i in 0..ceiling {
+            // Render ceiling
+            *renderer.get_pixel_mut(i, px).unwrap() = self.ceil_shader.sample(
+                i as f32 / half_height as f32,
+                i as f32 / half_height as f32,
+                sy,
+            );
+        }
+        for i in floor..height {
+            // Render floor
+            let ah = height - i;
+            *renderer.get_pixel_mut(i, px).unwrap() = self.floor_shader.sample(
+                (ah as f32) / half_height as f32,
+                1.0 - ((ah as f32) / half_height as f32),
+                sy,
+            );
+        }
+    }
+
     pub fn render_scene(
         &self,
         renderer: &mut ImmediateRenderer,
@@ -50,54 +80,51 @@ impl Game {
         for px in 0..width {
             let result_of_raycast = self.raycast(self.player.x, self.player.y, angle, 0.01, 16.0); // Raycast for a column
 
-            if let Some((cx, cy, ray)) = result_of_raycast {
-                // If smth is hit
-                let real_distance = ray * (angle - self.player.angle).abs().cos(); // Fix fish-eye effect by calculating real distance
-
-                let original_half_wall_height = (height as f32 / real_distance) as usize; // Find the half-height of a wall on a screen
-                let mut half_wall_height = original_half_wall_height; // create a copy for rendering on screen, original remains for sampling texture
-                if half_wall_height > half_height {
-                    // Set height in bounds of screen
-                    half_wall_height = half_height;
-                }
-
-                let offset = half_height - half_wall_height; // Find offset to wall
-
-                let ceiling = offset; // Ceiling start coordinate
-
-                let floor = height - offset; // Floor start coordinate
-
-                let wall_sample = sample_wall(cx, cy, 1000.0); // Y position on a wall texture
-
-                for i in 0..ceiling {
-                    // Render ceiling
-                    *renderer.get_pixel_mut(i, px).unwrap() = self.ceil_shader.sample(
-                        i as f32 / half_height as f32,
-                        i as f32 / half_height as f32,
-                        px as f32 / width as f32,
-                    );
-                }
-
-                for i in ceiling..floor {
-                    // Render walls
-                    let sx = (i - ceiling + (original_half_wall_height - half_wall_height)) as f32
-                        / (2 * original_half_wall_height) as f32; // Sample x texture coordinate by comparing point to original half height
-                    *renderer.get_pixel_mut(i, px).unwrap() =
-                        self.wall_shader.sample(ray, sx, wall_sample); // Render a sampled pixel
-                }
-
-                for i in floor..height {
-                    // Render floor
-                    let ah = height - i;
-                    *renderer.get_pixel_mut(i, px).unwrap() = self.floor_shader.sample(
-                        (ah as f32) / half_height as f32,
-                        1.0 - ((ah as f32) / half_height as f32),
-                        px as f32 / width as f32,
-                    );
-                }
+            if let Some(raycast) = result_of_raycast {
+                self.render_walls(renderer, width, height,  angle, px, raycast);
+            } else {
+                self.render_floor_and_ceiing(renderer, px, height, width, half_height, half_height);
             }
 
             angle -= step;
+        }
+    }
+
+    fn render_walls(
+        &self,
+        renderer: &mut ImmediateRenderer,
+        width: usize,
+        height: usize,
+        angle: f32,
+        px: usize,
+        (cx, cy, ray): (f32, f32, f32)
+    ) {
+        let real_distance = ray * (angle - self.player.angle).abs().cos(); // Fix fish-eye effect by calculating real distance
+
+        let half_height = height / 2;
+        let original_half_wall_height = (height as f32 / real_distance) as usize; // Find the half-height of a wall on a screen
+        let mut half_wall_height = original_half_wall_height; // create a copy for rendering on screen, original remains for sampling texture
+        if half_wall_height > half_height {
+            // Set height in bounds of screen
+            half_wall_height = half_height;
+        }
+
+        let offset = half_height - half_wall_height; // Find offset to wall
+
+        let ceiling = offset; // Ceiling start coordinate
+
+        let floor = height - offset; // Floor start coordinate
+
+        let wall_sample = sample_wall(cx, cy, 1000.0); // Y position on a wall texture
+
+        self.render_floor_and_ceiing(renderer, px, height, width, ceiling, floor);
+
+        for i in ceiling..floor {
+            // Render walls
+            let sx = (i - ceiling + (original_half_wall_height - half_wall_height)) as f32
+                / (2 * original_half_wall_height) as f32; // Sample x texture coordinate by comparing point to original half height
+            *renderer.get_pixel_mut(i, px).unwrap() = self.wall_shader.sample(ray, sx, wall_sample);
+            // Render a sampled pixel
         }
     }
 
@@ -115,7 +142,7 @@ impl Game {
         );
 
         if let Some((vx, vy, _)) =
-        self.raycast(self.player.x, self.player.y, self.player.angle, 0.8, 100.0)
+            self.raycast(self.player.x, self.player.y, self.player.angle, 0.8, 100.0)
         {
             renderer.place_char(24 + vx as usize * 8, vy as usize * 8, '█', rgb(255, 0, 0));
         }
