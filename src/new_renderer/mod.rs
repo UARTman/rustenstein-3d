@@ -1,5 +1,5 @@
 use crate::new_renderer::pixel::Pixel;
-use minifb::{Error, Window};
+use winit::{window::Window, dpi::{LogicalSize, PhysicalSize}};
 
 pub mod pixel;
 pub mod shader;
@@ -14,18 +14,23 @@ pub struct ImmediateRenderer {
 
 impl ImmediateRenderer {
     pub fn new(window: &Window) -> Self {
-        let (width, height) = window.get_size();
+        let  PhysicalSize { width, height}: PhysicalSize<u32> = window.inner_size();
         Self {
-            buffer: vec![0; width * height],
-            width,
-            height,
+            buffer: vec![0; (width * height) as usize],
+            width: width as usize,
+            height: height as usize,
         }
     }
 
-    pub fn flush(&self, window: &mut Window) -> Result<(), Error> {
-        window.update_with_buffer(&self.buffer, self.width, self.height)
+    pub fn render_to(&self, buf: &mut [u8]) {
+        for (i, &p) in self.buffer.iter().enumerate() {
+            buf[4 * i] = (p & 0xFF) as u8;
+            buf[4 * i + 1] = ((p >> 8) & 0xFF) as u8;
+            buf[4 * i + 2] = ((p >> 16) & 0xFF) as u8;
+            buf[4 * i + 3] = 0xFF;
+        }
     }
-
+    
     fn pos(&self, x: usize, y: usize) -> usize {
         x * self.width + y
     }
